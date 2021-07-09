@@ -1,37 +1,11 @@
-from django.shortcuts import render,redirect
-from django.contrib.auth.models import User
-from django.contrib import auth
+from django.shortcuts import render, get_object_or_404
+from .models import Blog
 
-def signup(request):
-	if request.method=='POST':
-		if request.POST['password1']==request.POST['password2']:
-			try:
-				user = User.objects.get(username=request.POST['username'])
-				return render(request,'account/signup.html',{'error':'Username is already present'})
-			except User.DoesNotExist:
-				user = User.objects.create_user(request.POST['username'],password=request.POST['password1'])
-				auth.login(request,user)
-				return redirect('home')
+def allblog(request):
+	blog = Blog.objects
+	return render(request,'allblog.html',{'blog':blog})
 
-	else:
-		return render(request,'account/signup.html')
-
-def login(request):
-	if request.method=='POST':
-		user = auth.authenticate(username=request.POST['username'],password=request.POST['password'])
-		if user is not None:
-			auth.login(request,user)
-			return redirect('home')
-		else:
-			return render(request,'account/login.html',{'error':'Username or Password is incorrect'})
-
-
-	else:
-		return render(request,'account/login.html')
-
-def logout(request):
-	if request.method=='POST':
-		auth.logout
-		return redirect('home')
-	
+def detail(request, blog_id):
+	blog = get_object_or_404(Blog,pk=blog_id)
+	return render(request,'detail.html',{'blog':blog})
 
